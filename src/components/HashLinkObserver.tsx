@@ -50,7 +50,8 @@ const HashLinkObserver: React.FC<Props> = ({isPageLoading, smoothScroll = true})
           // If the tabindex attribute wasn't already there, remove it on blur.
           element.addEventListener(
             "blur",
-            function () {
+            function resetTabIndex() {
+              element.removeEventListener('blur', resetTabIndex)
               element.removeAttribute('tabindex')
           });
         }
@@ -72,10 +73,11 @@ const HashLinkObserver: React.FC<Props> = ({isPageLoading, smoothScroll = true})
             // If the tabindex attribute wasn't already there, remove it on blur.
             missingElement.addEventListener(
               "blur",
-              function () {
+              function resetTabIndex() {
+                missingElement.removeEventListener('blur', resetTabIndex)
                 missingElement.removeAttribute('tabindex')
             });
-            }
+          }
           resetLoadingObserver(observer, observerTimeout);
         }
       });
