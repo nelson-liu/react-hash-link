@@ -23,18 +23,38 @@ const HashLinkObserver = ({ isPageLoading, smoothScroll = true }) => {
         const elementId = hash.slice(1);
         const element = document.getElementById(elementId);
         if (element) {
-            element.setAttribute('tabindex', '-1');
+            const hasTabIndex = element.getAttribute('tabindex');
+            if (!hasTabIndex) {
+                // Only set the tabindex attribute if it doesn't already exist.
+                element.setAttribute('tabindex', '-1');
+            }
             element.scrollIntoView(scrollIntoViewOptions);
             element.focus();
+            if (!hasTabIndex) {
+                // If the tabindex attribute wasn't already there, remove it on blur.
+                element.addEventListener("blur", function () {
+                    element.removeAttribute('tabindex');
+                });
+            }
             return;
         }
         // If there is a hash ID but no element, re-check after each DOM mutation
         loadingObserver = new MutationObserver((_, observer) => {
             const missingElement = document.getElementById(elementId);
             if (missingElement) {
-                missingElement.setAttribute('tabindex', '-1');
+                const hasTabIndex = missingElement.getAttribute('tabindex');
+                if (!hasTabIndex) {
+                    // Only set the tabindex attribute if it doesn't already exist.
+                    missingElement.setAttribute('tabindex', '-1');
+                }
                 missingElement.scrollIntoView(scrollIntoViewOptions);
                 missingElement.focus();
+                if (!hasTabIndex) {
+                    // If the tabindex attribute wasn't already there, remove it on blur.
+                    missingElement.addEventListener("blur", function () {
+                        missingElement.removeAttribute('tabindex');
+                    });
+                }
                 resetLoadingObserver(observer, observerTimeout);
             }
         });
